@@ -18,8 +18,10 @@ import zio.interop.catz
 import zio.{ExitCode, Task, _}
 
 import scala.concurrent.{ExecutionContext, Future}
+import shopliftr.config.Configuration
+import shopliftr.adl.AdlService.AdlStream
 
-object HelloWorld extends App {
+object OfferStealerApp extends App {
 
   val shopliftrApiLayer: ZLayer[Any, Throwable, ShopliftrApi] = clientManaged.toLayer >>> ShopliftrApi.live
 
@@ -28,17 +30,18 @@ object HelloWorld extends App {
   val fullLayer: ZLayer[Any, Throwable, Stores with ShopliftrApi with MongoSaver] = Stores.live ++ shopliftrApiLayer ++ mongoSaverLayer
 
   def run(args: List[String]): URIO[ZEnv, ExitCode] =
-    myAppLogic.provideLayer(Console.live ++ Clock.live ++ fullLayer).fold(_ => ExitCode.success, _ => ExitCode.failure)
+    shopliftrApp.provideLayer(Console.live ++ Clock.live ++ fullLayer).fold(_ => ExitCode.success, _ => ExitCode.failure)
 
-  val myAppLogic: ZIO[Clock with Console with Stores with ShopliftrApi with MongoSaver, Throwable, Unit] =
+  val shopliftrApp: ZIO[Clock with Console with Stores with ShopliftrApi with MongoSaver, Throwable, Unit] =
     for {
-      _ <- putStrLn("LETS CHECK START: ") *> Clock.Service.live.currentDateTime.flatMap(time => putStrLn(time.format(DateTimeFormatter.ISO_DATE_TIME)))
+      _ <- Clock.Service.live.currentDateTime.flatMap(time => putStrLn(time.format(DateTimeFormatter.ISO_DATE_TIME)))
       zipCodes <- Stores.loadStores("stores.csv").map(_.map(_.zipcode).distinct)
       promotions <- ZIO.foreachPar(zipCodes)(zipCode => ShopliftrApi.getPromotions(zipCode)
         .map(_.map(promotion => ShopliftrPromotion(promotion.promotionId, promotion, ShopliftrRequest("USA", "8", "78"), Set(zipCode)))))
         .map(_.flatten)
 
       flatten <- ZIO.succeed(reduce(List(), promotions))
+
 
       _ <- MongoSaver.saveAllPromotions(flatten)
       _ <- putStrLn("LETS CHECK END: ") *> Clock.Service.live.currentDateTime.flatMap(time => putStrLn(time.format(DateTimeFormatter.ISO_DATE_TIME))) *> Clock.Service.live.sleep(Duration(10, TimeUnit.SECONDS))
@@ -63,7 +66,6 @@ object HelloWorld extends App {
 
   def clientManaged: ZManaged[Any, Throwable, Client[Task]] = {
     val zioManaged: ZIO[Any, Throwable, ZManaged[Any, Throwable, Client[Task]]] = ZIO.runtime[Any].map { rts =>
-      // val exec = rts.platform.executor.asEC
       implicit def rr = rts
 
       catz.catsIOResourceSyntax(BlazeClientBuilder[Task](ExecutionContext.global).resource).toManaged

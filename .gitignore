@@ -4,3 +4,8 @@ target/
 .idea/
 .DS_Store
 /logs
+.bloop/
+.metals/
+.scalafmt.conf
+.vscode/
+project/
