@@ -19,7 +19,7 @@ import zio.{ExitCode, Task, _}
 
 import scala.concurrent.{ExecutionContext, Future}
 import shopliftr.config.Configuration
-import shopliftr.adl.AdlService.AdlStream
+import shopliftr.adl.adlService.AdlStream
 
 object OfferStealerApp extends App {
 

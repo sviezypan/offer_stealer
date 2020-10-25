@@ -9,7 +9,7 @@ import com.microsoft.azure.datalake.store.oauth2.ClientCredsTokenProvider
 import java.io.IOException
 import blocking._
 
-object AdlService {
+object adlService {
 
   type AdlStream = Has[Service]
 
