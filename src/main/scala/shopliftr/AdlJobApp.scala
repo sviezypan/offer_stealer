@@ -22,7 +22,7 @@ import org.apache.kafka.clients.producer.ProducerRecord
 object AdlJobApp extends zio.App {
 
   val producerSettings: ProducerSettings =
-    new ProducerSettings(List("localhost:9092"), 10.seconds, Map())
+    new ProducerSettings(List("localhost:9092","localhost:9093","localhost:9094"), 10.seconds, Map())
       .withProperty("linger.ms", "25")
       .withProperty("batch.size", "1000")
       .withProperty("max.request.size", "1000000")
@@ -35,7 +35,7 @@ object AdlJobApp extends zio.App {
 
   def run(args: List[String]): URIO[ZEnv, ExitCode] = {
     (for {
-      fiber <- adlToElasticApp.fork.ensuring(putStrLn("Done sending"))
+      fiber <- adlToElasticApp.ensuring(putStrLn("Fiber ended")).fork
       _ <- fiber.join
       _ <- putStrLn("The end")
     } yield ())
@@ -45,6 +45,8 @@ object AdlJobApp extends zio.App {
       .exitCode
   }
 
+  //TOOD move specifics to pure config
+  //TODO optimize
   val adlToElasticApp: ZIO[
     AdlStream with Console with Blocking with Producer[Any, Long, Array[Byte]],
     Throwable,
@@ -53,10 +55,10 @@ object AdlJobApp extends zio.App {
     _ <-
       adlService
         .streamFile(
-          "digital-tech-id-map/cardlink/test_data/10_15_2020_jaro_testing/cardlink-sns.csv"
+          "digital-tech-id-map/cardlink/test_data/10_15_2020_jaro_testing/cardlink-wakefern.csv"
         )
         .grouped(4096)
-        .map(byte => new ProducerRecord("offerstealer", 1L, byte.toArray))
+        .map(byte => new ProducerRecord("offerstealer", 2L, byte.toArray))
         .mapChunksM { record =>
           Producer.produceChunkAsync[Any, Long, Array[Byte]](record).flatten
         }

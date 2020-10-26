@@ -39,8 +39,8 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-log4j12" % "1.7.26",
   //adl
   "com.microsoft.azure" % "azure-data-lake-store-sdk" % "2.3.8",
-  "dev.zio" %% "zio-kafka" % "0.13.0"
-  //"com.fasterxml.jackson.core" % "jackson-databind" % "2.11.3"
+  "dev.zio" %% "zio-kafka" % "0.13.0",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.11.3"
 
 )
 
