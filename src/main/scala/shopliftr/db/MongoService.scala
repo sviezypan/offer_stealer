@@ -3,7 +3,7 @@ package shopliftr
 import reactivemongo.api.bson.collection.BSONCollection
 import reactivemongo.api.bson.{BSONDocumentReader, BSONDocumentWriter, Macros, document}
 import reactivemongo.api.commands.{MultiBulkWriteResult, WriteResult}
-import shopliftr.model.{Promotion, ShopliftrPromotion, ShopliftrRequest}
+import shopliftr.model.OfferStealer.{Promotion, ShopliftrPromotion, ShopliftrRequest}
 import zio._
 
 import scala.concurrent.ExecutionContext

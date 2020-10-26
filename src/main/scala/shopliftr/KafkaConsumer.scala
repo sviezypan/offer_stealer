@@ -11,6 +11,8 @@ import shopliftr.elastic.elastic_consumer._
 import zio.kafka.consumer._, zio.kafka.serde._
 import shopliftr.model._
 import shopliftr.model.Cardlink.CardlinkRow
+import shopliftr.model.Cardlink.IdDocument
+import shopliftr.model.Cardlink._
 import org.apache.kafka.common.header.Headers
 import org.apache.kafka.common.serialization.StringDeserializer
 import shopliftr.model.Cardlink.IdType
@@ -60,6 +62,11 @@ object KafkaConsumer extends zio.App {
       )
       .take(5)
       .tap(cr => putStrLn(cr.asJson.toString()))
+      .flatMap(cr => {
+        //TOODD create Id documents with relations, then somehow send them in chunks to elastic search
+        ???
+        //ZStream.apply(IdDocument(Identifier),)
+      })
   }
 
   implicit val ecnoder: Encoder[CardlinkRow] =

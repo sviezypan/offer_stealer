@@ -2,7 +2,7 @@ package shopliftr
 
 import java.io.IOException
 
-import shopliftr.model.Store
+import shopliftr.model.OfferStealer.Store
 import zio.{Has, IO, ZIO, ZLayer}
 
 import scala.io.Source
@@ -17,6 +17,7 @@ package object stores {
       def loadStores(path: String): IO[IOException, List[Store]]
     }
 
+    //TODO change to ZStreams
     object Service {
       val live: Service = (path: String) =>
         ZIO.effect(Source.fromResource(path)).bracket(bs => ZIO.effect(bs.close()).fold(_ => (), _ => ())) { bs =>

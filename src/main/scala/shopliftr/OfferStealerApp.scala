@@ -9,7 +9,7 @@ import reactivemongo.api.{AsyncDriver, DefaultDB, MongoConnection}
 import shopliftr.api.ShopliftrApi
 import shopliftr.api.ShopliftrApi.ShopliftrApi
 import shopliftr.db.MongoSaver
-import shopliftr.model.{DbMongoConfig, ShopliftrPromotion, ShopliftrRequest}
+import shopliftr.model.OfferStealer.{DbMongoConfig, ShopliftrPromotion, ShopliftrRequest}
 import shopliftr.stores.Stores
 import zio.clock.Clock
 import zio.console._

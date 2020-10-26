@@ -7,7 +7,7 @@ import fs2.Stream
 import io.circe.{Decoder, HCursor}
 import org.http4s._
 import org.http4s.client.Client
-import shopliftr.model.Promotion
+import shopliftr.model.OfferStealer.Promotion
 import zio._
 
 import scala.util.{Failure, Success, Try}
